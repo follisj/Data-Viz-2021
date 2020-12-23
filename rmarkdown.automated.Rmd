@@ -1,0 +1,108 @@
+---
+title: "CRAN Package Download Report"
+author: "me"
+date: "12/14/2020"
+output:
+  html_document: default
+  word_document: default
+  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+#https://towardsdatascience.com/automate-your-repetitive-reports-5ee60a53bda2)
+```
+[article](https://towardsdatascience.com/automate-your-repetitive-reports-5ee60a53bda2)
+
+[article](https://towardsdatascience.com/ten-awesome-r-markdown-tricks-56ef6d41098)
+
+```{r}
+library(cranlogs)
+library(dplyr)
+library(ggplot2)
+library(kableExtra)
+
+options(scipen=999)
+
+packages = c("ggplot2","dplyr","caret","rmarkdown","plyr","tidyr")
+df_month = cran_downloads(when = "last-month")
+df_lastweek = cran_downloads(when="last-week",package=packages)
+
+```
+
+Insert my own text here.
+
+```{r}
+kable(df_month %>%
+        arrange(desc(count)) %>% head(5),
+      caption="5 days with the most downloads in the last month") %>%
+  kable_styling(bootstrap_options = c("striped","condensed"),
+                position="center", font_size = 11)
+
+```
+
+```{r}
+ggplot(data=df_month,aes(x=date,y=count))+
+  geom_line(color="#00AFBB",size=1)+
+  scale_x_date(limits=c(min(df_month$date),NA)) +
+  stat_smooth(
+    color="#FC4E06",fill="#FC4E07",method="loess") +
+  labs(title="Downloads in the last month",
+       subtitle="Smoothed using 'loess' method") +
+  xlab("Dates") +
+  ylab("Download Numbers") +
+  theme_minimal()
+
+```
+
+```{r}
+kable(df_lastweek %>%
+        group_by(package) %>%
+        mutate(Total_DL=sum(count)) %>%
+        select(package,Total_DL) %>% 
+        unique(),
+      caption="Total Downloads in the Last Week for Selected Packages") %>%
+  kable_styling(bootstrap_options = c("striped","condensed"),position="center",font_size = 11)
+
+```
+
+
+```{r, echo=FALSE}
+ggplot(df_lastweek,aes(date,count, color=package))+
+  geom_line() +
+  ylab("Download Numbers")+
+  labs(title="Daily Downloads in the Last Week",
+       subtitle=paste(c("Package Names:",packages),collapse=" "))
+```
+
+## latex ex
+```{r}
+library(tinytex)
+```
+$$
+\begin{align*}
+\frac{P(y = 1)}{P(y=0)} &= e^{\beta_0 + \beta_1x_1 + ... + \beta_px_p}
+\end{align*}
+$$
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
